@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @RequiredArgsConstructor
-public class Review{
+public class Review {
 
   @Id
   @GeneratedValue()
@@ -24,6 +24,6 @@ public class Review{
   private Float peanut;
   private Float egg;
   private Float dairy;
-  
+
   private ReviewStatus status;
 }
