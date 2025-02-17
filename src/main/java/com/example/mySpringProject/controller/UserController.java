@@ -1,19 +1,12 @@
 package com.example.mySpringProject.controller;
 
-
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,61 +22,47 @@ public class UserController {
     this.userRepository = userRepository;
   }
 
-  @GetMapping("/")
-  public List<User> getAllUsers() {
-    return (List<User>) this.userRepository.findAll();
-  }
+  @GetMapping("/{username}")
+  public User getUser(
+    @PathVariable("username") String username
+  ) {
+    validateUsername(username);
 
-  @GetMapping("/{id}")
-  public User getByUserId(@PathVariable Long id) {
-    Optional<User> optionalUser = this.userRepository.findById(id);
-
-    if (!optionalUser.isPresent()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-    } else {
-      return optionalUser.get();
+    Optional<User> optionalUser = this.userRepository.findUserByUsername(username);
+    if(!optionalUser.isPresent()) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
+
+    User foundUser = optionalUser.get();
+    foundUser.setId(null);
+    return foundUser;
   }
+
 
   @PostMapping("/")
   @ResponseStatus(HttpStatus.CREATED)
-  public User newUser(@RequestBody User user) {
-    if (validateUsername(user)) {
-      return this.userRepository.save(user);
-    } else {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
-    }
-  }
 
-  @PutMapping("/{id}")
-  @ResponseStatus(HttpStatus.OK)
-  public User updateUser(@RequestParam("id") Long id, @RequestBody User user) {
-    Optional<User> optionalUser = this.userRepository.findById(id);
-    if (!optionalUser.isPresent()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-    } else {
-      return this.userRepository.save(user);
-    }
-  }
-
-  @DeleteMapping("/{id}")
+  @PutMapping("/{username}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteUser(@RequestParam("id") Long id) {
-    Optional<User> optionalUser = this.userRepository.findById(id);
-    if (!optionalUser.isPresent()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-    } else {
-      this.userRepository.delete(optionalUser.get());
+
+
+
+  private void copyUserInfoFrom(User updatedUser, User existingUser) {
+
+  }
+
+  private void validateUser(User user) {
+    validateUsername(user.getUsername());
+
+    Optional<User> optionalUser = this.userRepository.findUserByUsername(user.getUsername());
+    if (optionaleUser.isPresent()) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT);
     }
   }
 
-  public Boolean validateUsername(@RequestBody User user) {
-    List<User> allUsers = this.userRepository.findAll();
-    for (User u : allUsers) {
-      if (u.getUsername().equals(user.getUsername())) {
-        return false;
-      }
+  private void validateUsername(String username) {
+    if (ObjectUtils.isEmpty(username)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
-    return true;
   }
 }
