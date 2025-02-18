@@ -27,9 +27,9 @@ public class Restaurant {
   private String phoneNumber;
   private String website;
 
-  private Float overallScore;
-  private Float peanutScore;
-  private Float eggScore;
-  private Float dairyScore;
+  private String overallScore;
+  private String peanutScore;
+  private String eggScore;
+  private String dairyScore;
 
 }

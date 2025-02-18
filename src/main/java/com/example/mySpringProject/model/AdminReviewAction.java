@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Admin {
+public class AdminReviewAction {
   private Boolean accept;
 }

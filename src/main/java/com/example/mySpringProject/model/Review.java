@@ -19,11 +19,12 @@ public class Review {
   private Long id;
 
   private String submittedBy;
-
   private Long restaurantId;
-  private Float peanut;
-  private Float egg;
-  private Float dairy;
+  private String review;
+
+  private Integer peanutScore;
+  private Integer eggScore;
+  private Integer dairyScore;
 
   private ReviewStatus status;
 }
